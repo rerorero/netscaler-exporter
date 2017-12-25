@@ -1,0 +1,8 @@
+netscaler:
+  targets:
+    - host: 10.16.250.144
+      http_port: 80
+      username: foo
+      password: bar
+
+
