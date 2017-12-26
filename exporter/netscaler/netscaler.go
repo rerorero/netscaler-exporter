@@ -10,7 +10,8 @@ import (
 
 type Netscaler interface {
 	Authorize() error
-	GetVserverStats() ([]VServerStats, error)
+	GetHttpVserverStats() ([]HttpVServerStats, error)
+	BaseHttpUrl() string
 }
 
 type netscalerImpl struct {
@@ -21,7 +22,7 @@ type netscalerImpl struct {
 	password string
 }
 
-func NewNetscalerClient(host string, httpPort int, username string, password string) (*netscalerImpl, error) {
+func NewNetscalerClient(host string, httpPort int, username string, password string) (Netscaler, error) {
 	jar, err := cookiejar.New(nil)
 	if err != nil {
 		return nil, errors.Wrap(err, "Failed to initialize cookie")
@@ -40,6 +41,6 @@ func NewNetscalerClient(host string, httpPort int, username string, password str
 	}, nil
 }
 
-func (ns *netscalerImpl) baseHttpUrl() string {
+func (ns *netscalerImpl) BaseHttpUrl() string {
 	return fmt.Sprintf("http://%s:%d/nitro", ns.host, ns.httpPort)
 }

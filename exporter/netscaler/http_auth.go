@@ -10,14 +10,14 @@ import (
 )
 
 type withAuthParam struct {
-	req       *http.Request
-	f         func(*http.Response, []byte) error
-	retryAuth bool
+	req         *http.Request
+	f           func(*http.Response, []byte) error
+	noAuthRetry bool
 }
 
 // ref. https://docs.citrix.com/en-us/netscaler/11/nitro-api/nitro-rest/nitro-rest-connecting.html
 func (ns *netscalerImpl) Authorize() error {
-	path := ns.baseHttpUrl() + "/v1/config/login"
+	path := ns.BaseHttpUrl() + "/v1/config/login"
 	data := fmt.Sprintf(`{ 
 		"login": { 
 			"username":"%s", 
@@ -37,7 +37,7 @@ func (ns *netscalerImpl) Authorize() error {
 		return errors.Wrap(err, fmt.Sprintf("Failed to login to %s", ns.host))
 	}
 
-	if (r.StatusCode % 100) != 2 {
+	if (r.StatusCode / 100) != 2 {
 		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
 			return errors.Wrap(err, fmt.Sprintf("Failed to read response body, status=%d", r.StatusCode))
@@ -50,10 +50,6 @@ func (ns *netscalerImpl) Authorize() error {
 
 func (ns *netscalerImpl) WithAuth(param withAuthParam) error {
 	resp, err := ns.http.Do(param.req)
-	if err != nil {
-		return errors.Wrap(err, fmt.Sprintf("Failed to request to method=%s, url=%s", param.req.Method, param.req.URL))
-	}
-
 	if resp != nil {
 		defer resp.Body.Close()
 	}
@@ -66,21 +62,23 @@ func (ns *netscalerImpl) WithAuth(param withAuthParam) error {
 		return errors.Wrap(err, fmt.Sprintf("Failed to read response body, method=%s, url=%s", param.req.Method, param.req.URL))
 	}
 
-	if (resp.StatusCode % 100) == 2 {
+	if (resp.StatusCode / 100) == 2 {
 		return param.f(resp, body)
+
 	} else if resp.StatusCode == 401 {
 		// retry authorization once
-		if param.retryAuth {
-			err = ns.Authorize()
-			if err != nil {
-				return err
-			}
-			noAuth := param
-			noAuth.retryAuth = false
-			return ns.WithAuth(noAuth)
+		if param.noAuthRetry {
+			return fmt.Errorf("Failed to login to %s (no retry), status=%d, body=%s", ns.host, resp.StatusCode, string(body))
 		}
-		return fmt.Errorf("Failed to login to %s, status=%d, body=%s", ns.host, resp.StatusCode, string(body))
+		err = ns.Authorize()
+		if err != nil {
+			return err
+		}
+		noAuth := param
+		noAuth.noAuthRetry = true
+		return ns.WithAuth(noAuth)
+
 	} else {
-		return fmt.Errorf("Respond error, method=%s, url=%s, status=%d, body=%s", param.req.Method, param.req.URL, resp.StatusCode, string(body))
+		return fmt.Errorf("Respond auth error, method=%s, url=%s, status=%d, body=%s", param.req.Method, param.req.URL, resp.StatusCode, string(body))
 	}
 }
