@@ -1,46 +1,42 @@
 package netscaler
 
 import (
-	"fmt"
-	"net/http"
-	"net/http/cookiejar"
-
-	"github.com/pkg/errors"
+	"github.com/rerorero/netscaler-vpx-exporter/exporter/netscaler/nshttp"
+	"github.com/rerorero/netscaler-vpx-exporter/exporter/netscaler/nssnmp"
 )
 
 type Netscaler interface {
-	Authorize() error
-	GetHttpVserverStats() ([]HttpVServerStats, error)
-	BaseHttpUrl() string
+	GetStats() error
 }
 
 type netscalerImpl struct {
-	http     *http.Client
-	host     string
-	httpPort int
-	username string
-	password string
+	Http nshttp.NetscalerHttp
+	Snmp nssnmp.NetscalerSnmp
 }
 
-func NewNetscalerClient(host string, httpPort int, username string, password string) (Netscaler, error) {
-	jar, err := cookiejar.New(nil)
-	if err != nil {
-		return nil, errors.Wrap(err, "Failed to initialize cookie")
+func NewNetscalerClient(
+	host string,
+	httpPort int,
+	username string,
+	password string,
+	enableHttpStat bool,
+	enableSmtpStat bool,
+	timeoutSec int,
+) (Netscaler, error) {
+	ns := &netscalerImpl{}
+
+	if enableHttpStat {
+		httpClient, err := nshttp.NewNetscalerHttpClient(host, httpPort, username, password, timeoutSec)
+		if err != nil {
+			return nil, err
+		}
+		ns.Http = httpClient
 	}
 
-	httpClient := &http.Client{
-		Jar: jar,
-	}
-
-	return &netscalerImpl{
-		http:     httpClient,
-		host:     host,
-		httpPort: httpPort,
-		username: username,
-		password: password,
-	}, nil
+	return ns, nil
 }
 
-func (ns *netscalerImpl) BaseHttpUrl() string {
-	return fmt.Sprintf("http://%s:%d/nitro", ns.host, ns.httpPort)
+func (ns *netscalerImpl) GetStats() error {
+	// TODO
+	return nil
 }

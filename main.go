@@ -15,12 +15,11 @@ var (
 func main() {
 	flag.Parse()
 
-	conf, err := conf.NewConfFrom(*confPath)
+	conf, err := conf.NewConfFromFile(*confPath)
 	if err != nil {
 		panic(err)
 	}
 
 	context, _ := exporter.NewContext(conf)
 	fmt.Println(context)
-	context.Netscalers[0].Authorize()
 }

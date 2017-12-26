@@ -1,4 +1,4 @@
-package netscaler
+package nshttp
 
 import (
 	"encoding/json"
@@ -42,7 +42,7 @@ type NsVserversStatResult struct {
 }
 
 // ref. https://docs.citrix.com/en-us/netscaler/11/nitro-api/nitro-rest/nitro-rest-general/nitro-rest-statistics.html
-func (ns *netscalerImpl) GetHttpVserverStats() ([]HttpVServerStats, error) {
+func (ns *netscalerHttpImpl) GetHttpVserverStats() (map[string]*HttpVServerStats, error) {
 	req, err := http.NewRequest(http.MethodGet, ns.BaseHttpUrl()+"/v1/stat/lbvserver", nil)
 	if err != nil {
 		return nil, errors.Wrap(err, "New request failed")
@@ -63,5 +63,11 @@ func (ns *netscalerImpl) GetHttpVserverStats() ([]HttpVServerStats, error) {
 	if err != nil {
 		return nil, err
 	}
-	return result.Stats, nil
+
+	m := map[string]*HttpVServerStats{}
+	for _, stat := range result.Stats {
+		m[stat.Name] = &stat
+	}
+
+	return m, nil
 }

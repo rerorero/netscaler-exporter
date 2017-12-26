@@ -1,4 +1,4 @@
-package netscaler
+package nshttp
 
 import (
 	"fmt"
@@ -10,7 +10,7 @@ import (
 )
 
 type HttpMock interface {
-	Mocked(func(Netscaler, *httptest.Server))
+	Mocked(func(NetscalerHttp, *httptest.Server))
 }
 
 type HttpMockHandlers struct {
@@ -222,20 +222,20 @@ func verifyCookie(r *http.Request) bool {
 	return err == nil && cookie != nil
 }
 
-func (mock *httpMockImpl) Mocked(f func(Netscaler, *httptest.Server)) {
+func (mock *httpMockImpl) Mocked(f func(NetscalerHttp, *httptest.Server)) {
 	server := httptest.NewServer(mock.handlers.rootHandler)
 	defer server.Close()
 
 	uri, _ := url.Parse(server.URL)
 	port, _ := strconv.Atoi(uri.Port())
-	ns, err := NewNetscalerClient(uri.Hostname(), port, "Alice", "secret")
+	ns, err := NewNetscalerHttpClient(uri.Hostname(), port, "Alice", "secret", 30)
 	if err != nil {
 		log.Fatalf("Could not start mock server: %s", err)
 	}
 	f(ns, server)
 }
 
-func MockedNetscaler(handlers HttpMockHandlers, f func(Netscaler, *httptest.Server)) {
+func MockedNetscaler(handlers HttpMockHandlers, f func(NetscalerHttp, *httptest.Server)) {
 	mock := NewHttpMock(handlers)
 	mock.Mocked(f)
 }

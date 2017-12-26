@@ -1,4 +1,4 @@
-package netscaler
+package nshttp
 
 import (
 	"encoding/json"
@@ -7,7 +7,7 @@ import (
 )
 
 func TestGetVserverStatsSucceed(t *testing.T) {
-	MockedNetscaler(HttpMockHandlers{}, func(ns Netscaler, server *httptest.Server) {
+	MockedNetscaler(HttpMockHandlers{}, func(ns NetscalerHttp, server *httptest.Server) {
 		expected := map[string]*json.RawMessage{}
 		err := json.Unmarshal([]byte(statsBody), &expected)
 		if err != nil {
@@ -29,7 +29,7 @@ func TestGetVserverStatsFailedInAuth(t *testing.T) {
 	handlers := HttpMockHandlers{
 		loginHandler: loginFailHandler,
 	}
-	MockedNetscaler(handlers, func(ns Netscaler, server *httptest.Server) {
+	MockedNetscaler(handlers, func(ns NetscalerHttp, server *httptest.Server) {
 		_, err := ns.GetHttpVserverStats()
 		if err == nil {
 			t.Fatal("GetHttpVserverStats() succeed")

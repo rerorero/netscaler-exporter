@@ -13,12 +13,16 @@ type Context struct {
 
 func NewContext(config *conf.Conf) (*Context, error) {
 	nsary := []netscaler.Netscaler{}
-	for i, nsconf := range config.Netscaler.Targets {
+	for i, nsconf := range config.Netscaler.StaticTargets {
 		ns, err := netscaler.NewNetscalerClient(
 			nsconf.Host,
 			nsconf.HTTPPort,
 			nsconf.Username,
-			nsconf.Password)
+			nsconf.Password,
+			nsconf.EnableHttpStat,
+			nsconf.EnableSnmpStat,
+			nsconf.TimeoutSec,
+		)
 
 		if err != nil {
 			return nil, errors.Wrap(err, "error : Failed to instantiate Netscaler client")

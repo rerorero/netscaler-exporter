@@ -1,4 +1,4 @@
-package netscaler
+package nshttp
 
 import (
 	"bytes"
@@ -16,7 +16,7 @@ type withAuthParam struct {
 }
 
 // ref. https://docs.citrix.com/en-us/netscaler/11/nitro-api/nitro-rest/nitro-rest-connecting.html
-func (ns *netscalerImpl) Authorize() error {
+func (ns *netscalerHttpImpl) Authorize() error {
 	path := ns.BaseHttpUrl() + "/v1/config/login"
 	data := fmt.Sprintf(`{ 
 		"login": { 
@@ -48,7 +48,7 @@ func (ns *netscalerImpl) Authorize() error {
 	return nil
 }
 
-func (ns *netscalerImpl) WithAuth(param withAuthParam) error {
+func (ns *netscalerHttpImpl) WithAuth(param withAuthParam) error {
 	resp, err := ns.http.Do(param.req)
 	if resp != nil {
 		defer resp.Body.Close()
