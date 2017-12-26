@@ -8,10 +8,10 @@ import (
 )
 
 type NetscalerNode struct {
-	Host     string `yaml:host`
-	HTTPPort int    `yaml:http_port`
-	Username string `yaml:username`
-	Password string `yaml:password`
+	Host     string `yaml:"host"`
+	HTTPPort int    `yaml:"http_port"`
+	Username string `yaml:"username"`
+	Password string `yaml:"password"`
 }
 
 type NetscalerConf struct {
@@ -19,7 +19,7 @@ type NetscalerConf struct {
 }
 
 type Conf struct {
-	Netscaler NetscalerConf `yaml:netscaler`
+	Netscaler NetscalerConf `yaml:"netscaler"`
 }
 
 func NewConfFrom(confPath string) (*Conf, error) {
