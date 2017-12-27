@@ -14,7 +14,7 @@ type SnmpVserverStats struct {
 	LbVserverAverageTTFB int64
 }
 
-func (ns *netscalerSnmpImpl) GetSnmpVserverStats() (map[string]*SnmpVserverStats, error) {
+func (ns *netscalerSnmpImpl) getSnmpVserverStats() (map[string]*SnmpVserverStats, error) {
 	serverMap, err := ns.getVserverIndex()
 	if err != nil {
 		return nil, err

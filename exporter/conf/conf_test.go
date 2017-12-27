@@ -23,6 +23,7 @@ netscaler:
       password: bbb
       enable_http: no
       enable_snmp: yes
+bind_port: 8080
 `
 	actual, err := NewConfFromYaml([]byte(s))
 	if err != nil {
@@ -55,6 +56,7 @@ netscaler:
 				},
 			},
 		},
+		BindPort: 8080,
 	}
 
 	if !reflect.DeepEqual(expected, actual) {

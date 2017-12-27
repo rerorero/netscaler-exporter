@@ -16,7 +16,7 @@ type withAuthParam struct {
 }
 
 // ref. https://docs.citrix.com/en-us/netscaler/11/nitro-api/nitro-rest/nitro-rest-connecting.html
-func (ns *netscalerHttpImpl) Authorize() error {
+func (ns *netscalerHttpImpl) authorize() error {
 	path := ns.BaseHttpUrl() + "/v1/config/login"
 	data := fmt.Sprintf(`{ 
 		"login": { 
@@ -48,7 +48,7 @@ func (ns *netscalerHttpImpl) Authorize() error {
 	return nil
 }
 
-func (ns *netscalerHttpImpl) WithAuth(param withAuthParam) error {
+func (ns *netscalerHttpImpl) withAuth(param withAuthParam) error {
 	resp, err := ns.http.Do(param.req)
 	if resp != nil {
 		defer resp.Body.Close()
@@ -70,13 +70,13 @@ func (ns *netscalerHttpImpl) WithAuth(param withAuthParam) error {
 		if param.noAuthRetry {
 			return fmt.Errorf("Failed to login to %s (no retry), status=%d, body=%s", ns.host, resp.StatusCode, string(body))
 		}
-		err = ns.Authorize()
+		err = ns.authorize()
 		if err != nil {
 			return err
 		}
 		noAuth := param
 		noAuth.noAuthRetry = true
-		return ns.WithAuth(noAuth)
+		return ns.withAuth(noAuth)
 
 	} else {
 		return fmt.Errorf("Respond auth error, method=%s, url=%s, status=%d, body=%s", param.req.Method, param.req.URL, resp.StatusCode, string(body))

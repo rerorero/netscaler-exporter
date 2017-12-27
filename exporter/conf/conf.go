@@ -26,6 +26,7 @@ type NetscalerConf struct {
 
 type Conf struct {
 	Netscaler NetscalerConf `yaml:"netscaler"`
+	BindPort  int           `yaml:"bind_port"`
 }
 
 func NewConfFromFile(confPath string) (*Conf, error) {

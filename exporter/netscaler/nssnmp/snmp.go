@@ -7,8 +7,13 @@ import (
 )
 
 type NetscalerSnmp interface {
-	GetSnmpVserverStats() (map[string]*SnmpVserverStats, error)
-	GetSnmpGlobalStats() (*SnmpGlobalStats, error)
+	GetStats() (*NetscalerSnmpStats, error)
+}
+
+type NetscalerSnmpStats struct {
+	VServers   map[string]*SnmpVserverStats
+	Global     *SnmpGlobalStats
+	SnmpHealth bool
 }
 
 type netscalerSnmpImpl struct {
@@ -41,4 +46,22 @@ func NewNetscalerSnmp(
 	return &netscalerSnmpImpl{
 		snmp: snmp,
 	}
+}
+
+func (ns *netscalerSnmpImpl) GetStats() (*NetscalerSnmpStats, error) {
+	global, err := ns.getSnmpGlobalStats()
+	if err != nil {
+		return nil, err
+	}
+
+	vservers, err := ns.getSnmpVserverStats()
+	if err != nil {
+		return nil, err
+	}
+
+	return &NetscalerSnmpStats{
+		Global:     global,
+		VServers:   vservers,
+		SnmpHealth: true,
+	}, nil
 }

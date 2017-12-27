@@ -1,0 +1,9 @@
+netscaler:
+  static_targets:
+    - host: 127.0.0.1
+      snmp_port: 9161
+      snmp_community: public
+      enable_http: no
+      enable_snmp: yes
+      timeout: 100
+bind_port: 8080

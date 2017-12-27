@@ -8,7 +8,7 @@ func TestGetSnmpVserverStatsSucceed(t *testing.T) {
 		t.Skip("Skip SNMP tests in short mode becase of lack of mocked SNMP server.")
 	}
 	snmp := newTestSnmp()
-	actual, err := snmp.GetSnmpVserverStats()
+	actual, err := snmp.getSnmpVserverStats()
 	if err != nil {
 		t.Fatal(err)
 	}

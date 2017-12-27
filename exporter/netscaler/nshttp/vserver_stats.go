@@ -10,46 +10,46 @@ import (
 
 type HttpVServerStats struct {
 	Name                  string  `json:"name"`
-	VserverSrugeCount     int     `json:"vsvrsurgecount,string"`
-	EstablishedConn       int     `json:"establishedconn,string"`
-	InactiveServices      int     `json:"inactsvcs,string"`
+	VserverSurgeCount     float64 `json:"vsvrsurgecount,string"`
+	EstablishedConn       float64 `json:"establishedconn,string"`
+	InactiveServices      float64 `json:"inactsvcs,string"`
 	Health                float64 `json:"vslbhealth,string"`
 	PrimaryIpAddress      string  `json:"primaryipaddress"`
 	PrimaryPort           int     `json:"primaryport"`
 	Type                  string  `json:"type"`
 	State                 string  `json:"state"`
-	ActiveServices        int     `json:"actsvcs,string"`
-	TotalHits             int64   `json:"tothits,string"`
-	HitsRate              int     `json:"hitsrate"`
-	TotalRequests         int64   `json:"totalrequests,string"`
-	RequestsRate          int     `json:"requestsrate"`
-	TotalResponses        int64   `json:"totalresponses,string"`
-	ResponsesRate         int     `json:"responsesrate"`
-	TotalRequestBytes     int64   `json:"totalrequestbytes,string"`
-	RequestBytesRate      int     `json:"requestbytesrate"`
-	TotalResponseBytes    int64   `json:"totalresponsebytes,string"`
-	ResponseBytesRate     int     `json:"responsebytesrate"`
-	TotalPackateReceived  int64   `json:"totalpktsrecvd,string"`
-	PackageReceivedRate   int     `json:"pktsrecvdrate"`
-	TotalPackageSent      int64   `json:"totalpktssent,string"`
-	PackageSentRate       int     `json:"pktssentrate"`
-	SurgeCount            int     `json:"surgecount,string"`
-	ServiceSurgeCount     int     `json:"svcsurgecount,string"`
-	InvlidRequestResponse int64   `json:"invalidrequestresponse,string"`
+	ActiveServices        float64 `json:"actsvcs,string"`
+	TotalHits             float64 `json:"tothits,string"`
+	HitsRate              float64 `json:"hitsrate"`
+	TotalRequests         float64 `json:"totalrequests,string"`
+	RequestsRate          float64 `json:"requestsrate"`
+	TotalResponses        float64 `json:"totalresponses,string"`
+	ResponsesRate         float64 `json:"responsesrate"`
+	TotalRequestBytes     float64 `json:"totalrequestbytes,string"`
+	RequestBytesRate      float64 `json:"requestbytesrate"`
+	TotalResponseBytes    float64 `json:"totalresponsebytes,string"`
+	ResponseBytesRate     float64 `json:"responsebytesrate"`
+	TotalPackateReceived  float64 `json:"totalpktsrecvd,string"`
+	PackageReceivedRate   float64 `json:"pktsrecvdrate"`
+	TotalPackageSent      float64 `json:"totalpktssent,string"`
+	PackageSentRate       float64 `json:"pktssentrate"`
+	SurgeCount            float64 `json:"surgecount,string"`
+	ServiceSurgeCount     float64 `json:"svcsurgecount,string"`
+	InvlidRequestResponse float64 `json:"invalidrequestresponse,string"`
 }
 type NsVserversStatResult struct {
 	Stats []HttpVServerStats `json:"lbvserver"`
 }
 
 // ref. https://docs.citrix.com/en-us/netscaler/11/nitro-api/nitro-rest/nitro-rest-general/nitro-rest-statistics.html
-func (ns *netscalerHttpImpl) GetHttpVserverStats() (map[string]*HttpVServerStats, error) {
+func (ns *netscalerHttpImpl) getHttpVserverStats() (map[string]*HttpVServerStats, error) {
 	req, err := http.NewRequest(http.MethodGet, ns.BaseHttpUrl()+"/v1/stat/lbvserver", nil)
 	if err != nil {
 		return nil, errors.Wrap(err, "New request failed")
 	}
 	result := &NsVserversStatResult{}
 
-	err = ns.WithAuth(withAuthParam{
+	err = ns.withAuth(withAuthParam{
 		req: req,
 		f: func(resp *http.Response, body []byte) error {
 			err2 := json.Unmarshal(body, result)

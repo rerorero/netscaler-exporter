@@ -3,7 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
+	"net/http"
 
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/rerorero/netscaler-vpx-exporter/exporter"
 	"github.com/rerorero/netscaler-vpx-exporter/exporter/conf"
 )
@@ -17,9 +21,21 @@ func main() {
 
 	conf, err := conf.NewConfFromFile(*confPath)
 	if err != nil {
-		panic(err)
+		log.Fatal(err.Error())
 	}
 
-	context, _ := exporter.NewContext(conf)
-	fmt.Println(context)
+	exporter, err := exporter.NewExporter(conf)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	prometheus.MustRegister(exporter)
+
+	http.Handle("/metrics", promhttp.Handler())
+
+	port := fmt.Sprintf(":%d", conf.BindPort)
+	err = http.ListenAndServe(port, nil)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
 }

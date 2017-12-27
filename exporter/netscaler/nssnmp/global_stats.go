@@ -8,7 +8,7 @@ type SnmpGlobalStats struct {
 	ServerBusyErrors int64
 }
 
-func (ns *netscalerSnmpImpl) GetSnmpGlobalStats() (*SnmpGlobalStats, error) {
+func (ns *netscalerSnmpImpl) getSnmpGlobalStats() (*SnmpGlobalStats, error) {
 	stats := SnmpGlobalStats{}
 
 	info := map[string]*oidGet{

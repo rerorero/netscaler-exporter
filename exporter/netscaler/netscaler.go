@@ -1,42 +1,72 @@
 package netscaler
 
 import (
+	"github.com/rerorero/netscaler-vpx-exporter/exporter/conf"
 	"github.com/rerorero/netscaler-vpx-exporter/exporter/netscaler/nshttp"
 	"github.com/rerorero/netscaler-vpx-exporter/exporter/netscaler/nssnmp"
 )
 
 type Netscaler interface {
-	GetStats() error
+	GetStats() (*NetscalerStats, []error)
+	GetHost() string
+}
+
+type NetscalerStats struct {
+	Http nshttp.NetscalerHttpStats
+	Snmp nssnmp.NetscalerSnmpStats
 }
 
 type netscalerImpl struct {
 	Http nshttp.NetscalerHttp
 	Snmp nssnmp.NetscalerSnmp
+	conf conf.NetscalerNode
 }
 
-func NewNetscalerClient(
-	host string,
-	httpPort int,
-	username string,
-	password string,
-	enableHttpStat bool,
-	enableSmtpStat bool,
-	timeoutSec int,
-) (Netscaler, error) {
-	ns := &netscalerImpl{}
+func NewNetscalerClient(node conf.NetscalerNode) (Netscaler, error) {
+	ns := &netscalerImpl{conf: node}
 
-	if enableHttpStat {
-		httpClient, err := nshttp.NewNetscalerHttpClient(host, httpPort, username, password, timeoutSec)
+	if node.EnableHttpStat {
+		httpClient, err := nshttp.NewNetscalerHttpClient(node.Host, node.HTTPPort, node.Username, node.Password, node.TimeoutSec)
 		if err != nil {
 			return nil, err
 		}
 		ns.Http = httpClient
 	}
 
+	if node.EnableSnmpStat {
+		ns.Snmp = nssnmp.NewNetscalerSnmp(node.Host, node.SNMPPort, node.SNMPCommunity, node.TimeoutSec)
+	}
+
 	return ns, nil
 }
 
-func (ns *netscalerImpl) GetStats() error {
-	// TODO
-	return nil
+func (ns *netscalerImpl) GetStats() (*NetscalerStats, []error) {
+	stats := &NetscalerStats{}
+	errors := []error{}
+
+	if ns.Http != nil {
+		s, err := ns.Http.GetStats()
+		if s != nil {
+			stats.Http = *s
+		}
+		if err != nil {
+			errors = append(errors, err)
+		}
+	}
+
+	if ns.Snmp != nil {
+		s, err := ns.Snmp.GetStats()
+		if s != nil {
+			stats.Snmp = *s
+		}
+		if err != nil {
+			errors = append(errors, err)
+		}
+	}
+
+	return stats, nil
+}
+
+func (ns *netscalerImpl) GetHost() string {
+	return ns.conf.Host
 }

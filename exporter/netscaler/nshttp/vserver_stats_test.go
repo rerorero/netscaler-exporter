@@ -7,14 +7,14 @@ import (
 )
 
 func TestGetVserverStatsSucceed(t *testing.T) {
-	MockedNetscaler(HttpMockHandlers{}, func(ns NetscalerHttp, server *httptest.Server) {
+	MockedNetscaler(HttpMockHandlers{}, func(ns *netscalerHttpImpl, server *httptest.Server) {
 		expected := map[string]*json.RawMessage{}
 		err := json.Unmarshal([]byte(statsBody), &expected)
 		if err != nil {
 			t.Fatalf("Invalid json")
 		}
 
-		stats, err := ns.GetHttpVserverStats()
+		stats, err := ns.getHttpVserverStats()
 		if err != nil {
 			t.Fatalf("GetVserverStats() failed: %s\n", err)
 		}
@@ -29,8 +29,8 @@ func TestGetVserverStatsFailedInAuth(t *testing.T) {
 	handlers := HttpMockHandlers{
 		loginHandler: loginFailHandler,
 	}
-	MockedNetscaler(handlers, func(ns NetscalerHttp, server *httptest.Server) {
-		_, err := ns.GetHttpVserverStats()
+	MockedNetscaler(handlers, func(ns *netscalerHttpImpl, server *httptest.Server) {
+		_, err := ns.getHttpVserverStats()
 		if err == nil {
 			t.Fatal("GetHttpVserverStats() succeed")
 		}
