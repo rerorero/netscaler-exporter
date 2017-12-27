@@ -15,7 +15,7 @@ type netscalerSnmpImpl struct {
 	snmp *gosnmp.GoSNMP
 }
 
-var (
+const (
 	// ref. https://github.com/citrix/netscaler-snmp-oid-reference/blob/master/docs/index.md
 	oidHttpErrorServerBusy   = "1.3.6.1.4.1.5951.4.1.1.48.61"
 	oidVserverTable          = "1.3.6.1.4.1.5951.4.1.3.1"
