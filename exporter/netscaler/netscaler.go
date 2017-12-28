@@ -17,13 +17,15 @@ type NetscalerStats struct {
 }
 
 type netscalerImpl struct {
-	Http nshttp.NetscalerHttp
-	Snmp nssnmp.NetscalerSnmp
-	conf conf.NetscalerNode
+	Http     nshttp.NetscalerHttp
+	Snmp     nssnmp.NetscalerSnmp
+	hostname string
 }
 
 func NewNetscalerClient(node conf.NetscalerNode) (Netscaler, error) {
-	ns := &netscalerImpl{conf: node}
+	ns := &netscalerImpl{
+		hostname: node.Host,
+	}
 
 	if node.EnableHttpStat {
 		httpClient, err := nshttp.NewNetscalerHttpClient(node.Host, node.HTTPPort, node.Username, node.Password, node.TimeoutSec)
@@ -68,5 +70,5 @@ func (ns *netscalerImpl) GetStats() (*NetscalerStats, []error) {
 }
 
 func (ns *netscalerImpl) GetHost() string {
-	return ns.conf.Host
+	return ns.hostname
 }

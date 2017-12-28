@@ -8,6 +8,7 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/rerorero/netscaler-exporter/exporter/conf"
+	"github.com/rerorero/netscaler-exporter/exporter/metric"
 	"github.com/rerorero/netscaler-exporter/exporter/netscaler"
 )
 
@@ -16,11 +17,16 @@ type Exporter interface {
 }
 
 type exporterImpl struct {
-	conf       *conf.Conf
-	netscalers []netscaler.Netscaler
+	netscalers     []netscaler.Netscaler
+	globalMetrics  []metric.NsMetric
+	vserverMetrics []metric.NsMetric
 }
 
-func NewExporter(config *conf.Conf) (Exporter, error) {
+func NewExporter(
+	config *conf.Conf,
+	globalMetrics []metric.NsMetric,
+	vserverMetrics []metric.NsMetric,
+) (Exporter, error) {
 	nsary := []netscaler.Netscaler{}
 	for _, nsconf := range config.Netscaler.StaticTargets {
 		ns, err := netscaler.NewNetscalerClient(nsconf)
@@ -31,19 +37,20 @@ func NewExporter(config *conf.Conf) (Exporter, error) {
 	}
 
 	return &exporterImpl{
-		conf:       config,
-		netscalers: nsary,
+		netscalers:     nsary,
+		globalMetrics:  globalMetrics,
+		vserverMetrics: vserverMetrics,
 	}, nil
 }
 
 func (e *exporterImpl) Describe(ch chan<- *prometheus.Desc) {
 	// global
-	for _, metric := range globalMetrics {
+	for _, metric := range e.globalMetrics {
 		metric.GetCollector().Describe(ch)
 	}
 
 	// vserver
-	for _, metric := range vserverMetrics {
+	for _, metric := range e.vserverMetrics {
 		metric.GetCollector().Describe(ch)
 	}
 }
@@ -52,12 +59,18 @@ func (e *exporterImpl) Collect(ch chan<- prometheus.Metric) {
 	wg := &sync.WaitGroup{}
 	for _, ns := range e.netscalers {
 		wg.Add(1)
-		go doCollect(ns, ch, wg)
+		go doCollect(ns, ch, wg, e.globalMetrics, e.vserverMetrics)
 	}
 	wg.Wait()
 }
 
-func doCollect(ns netscaler.Netscaler, ch chan<- prometheus.Metric, wg *sync.WaitGroup) {
+func doCollect(
+	ns netscaler.Netscaler,
+	ch chan<- prometheus.Metric,
+	wg *sync.WaitGroup,
+	globalMetrics []metric.NsMetric,
+	vserverMetrics []metric.NsMetric,
+) {
 	stats, errors := ns.GetStats()
 	for _, err := range errors {
 		log.Println("warn : Failed to get stats from ", ns.GetHost(), err.Error())

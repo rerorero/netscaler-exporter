@@ -24,7 +24,7 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
-	exporter, err := exporter.NewExporter(conf)
+	exporter, err := exporter.NewExporter(conf, exporter.GlobalMetrics, exporter.VserverMetrics)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
