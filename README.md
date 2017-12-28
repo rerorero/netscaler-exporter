@@ -1,6 +1,6 @@
 # netscaler-exporter
 
-[![Build Status](https://travis-ci.org/rerorero/netscaler-vpx-exporter.svg?branch=test)](https://travis-ci.org/rerorero/netscaler-vpx-exporter)
+[![Build Status](https://travis-ci.org/rerorero/netscaler-exporter.svg?branch=master)](https://travis-ci.org/rerorero/netscaler-exporter)
 
 Simple Prometheus exoprter server that collects Citrix Netscaler stats.
 
