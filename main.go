@@ -8,8 +8,8 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"github.com/rerorero/netscaler-vpx-exporter/exporter"
-	"github.com/rerorero/netscaler-vpx-exporter/exporter/conf"
+	"github.com/rerorero/netscaler-exporter/exporter"
+	"github.com/rerorero/netscaler-exporter/exporter/conf"
 )
 
 var (

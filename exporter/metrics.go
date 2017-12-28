@@ -1,9 +1,9 @@
 package exporter
 
 import (
-	m "github.com/rerorero/netscaler-vpx-exporter/exporter/metric"
-	"github.com/rerorero/netscaler-vpx-exporter/exporter/netscaler/nshttp"
-	"github.com/rerorero/netscaler-vpx-exporter/exporter/netscaler/nssnmp"
+	m "github.com/rerorero/netscaler-exporter/exporter/metric"
+	"github.com/rerorero/netscaler-exporter/exporter/netscaler/nshttp"
+	"github.com/rerorero/netscaler-exporter/exporter/netscaler/nssnmp"
 )
 
 const (

@@ -2,7 +2,7 @@ package metric
 
 import (
 	"github.com/prometheus/client_golang/prometheus"
-	"github.com/rerorero/netscaler-vpx-exporter/exporter/netscaler"
+	"github.com/rerorero/netscaler-exporter/exporter/netscaler"
 )
 
 type NsCounter interface {

@@ -7,8 +7,8 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 
 	"github.com/pkg/errors"
-	"github.com/rerorero/netscaler-vpx-exporter/exporter/conf"
-	"github.com/rerorero/netscaler-vpx-exporter/exporter/netscaler"
+	"github.com/rerorero/netscaler-exporter/exporter/conf"
+	"github.com/rerorero/netscaler-exporter/exporter/netscaler"
 )
 
 type Exporter interface {

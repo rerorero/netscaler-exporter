@@ -1,9 +1,9 @@
 package netscaler
 
 import (
-	"github.com/rerorero/netscaler-vpx-exporter/exporter/conf"
-	"github.com/rerorero/netscaler-vpx-exporter/exporter/netscaler/nshttp"
-	"github.com/rerorero/netscaler-vpx-exporter/exporter/netscaler/nssnmp"
+	"github.com/rerorero/netscaler-exporter/exporter/conf"
+	"github.com/rerorero/netscaler-exporter/exporter/netscaler/nshttp"
+	"github.com/rerorero/netscaler-exporter/exporter/netscaler/nssnmp"
 )
 
 type Netscaler interface {
