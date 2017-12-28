@@ -63,17 +63,20 @@ func doCollect(ns netscaler.Netscaler, ch chan<- prometheus.Metric, wg *sync.Wai
 		log.Println("warn : Failed to get stats from ", ns.GetHost(), err.Error())
 	}
 
-	// global
+	// global metrics
 	for _, metric := range globalMetrics {
 		labels := prometheus.Labels{LabelNsHost: ns.GetHost()}
+		metric.Reset()
 		metric.Update(stats, labels)
 		metric.GetCollector().Collect(ch)
 	}
 
-	// vserver
+	// vserver metrics
+	vservers := collectVservers(stats)
 	for _, metric := range vserverMetrics {
+		metric.Reset()
 		if stats != nil {
-			for vserver, _ := range stats.Http.VServers {
+			for _, vserver := range vservers {
 				labels := prometheus.Labels{
 					LabelNsHost:  ns.GetHost(),
 					LabelVServer: vserver,
@@ -87,4 +90,21 @@ func doCollect(ns netscaler.Netscaler, ch chan<- prometheus.Metric, wg *sync.Wai
 	}
 
 	wg.Done()
+}
+
+func collectVservers(stats *netscaler.NetscalerStats) []string {
+	vservers := []string{}
+	vserversSet := map[string]struct{}{}
+	if stats != nil {
+		for s, _ := range stats.Http.VServers {
+			vserversSet[s] = struct{}{}
+		}
+		for s, _ := range stats.Snmp.VServers {
+			vserversSet[s] = struct{}{}
+		}
+	}
+	for s, _ := range vserversSet {
+		vservers = append(vservers, s)
+	}
+	return vservers
 }

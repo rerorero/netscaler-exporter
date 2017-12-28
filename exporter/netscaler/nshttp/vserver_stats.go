@@ -31,8 +31,8 @@ type HttpVServerStats struct {
 	ResponseBytesRate     float64 `json:"responsebytesrate"`
 	TotalPackateReceived  float64 `json:"totalpktsrecvd,string"`
 	PackageReceivedRate   float64 `json:"pktsrecvdrate"`
-	TotalPackageSent      float64 `json:"totalpktssent,string"`
-	PackageSentRate       float64 `json:"pktssentrate"`
+	TotalPacketSent       float64 `json:"totalpktssent,string"`
+	PacketSentRate        float64 `json:"pktssentrate"`
 	SurgeCount            float64 `json:"surgecount,string"`
 	ServiceSurgeCount     float64 `json:"svcsurgecount,string"`
 	InvlidRequestResponse float64 `json:"invalidrequestresponse,string"`

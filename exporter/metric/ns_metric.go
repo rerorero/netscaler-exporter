@@ -5,10 +5,6 @@ import (
 	"github.com/rerorero/netscaler-vpx-exporter/exporter/netscaler"
 )
 
-const (
-	Namespace = "ns"
-)
-
 type NsMetric interface {
 	// returns prometheus collector instance.
 	GetCollector() prometheus.Collector
@@ -16,6 +12,10 @@ type NsMetric interface {
 	// Update the metric by Netscaler stats.
 	// It returns where the metric collected or not.
 	Update(*netscaler.NetscalerStats, prometheus.Labels) bool
+
+	// Clear persistent value.
+	// Since the collector sets a fixed value, it calls Reset() in Collect() every time.
+	Reset()
 }
 
 type CollectArg struct {

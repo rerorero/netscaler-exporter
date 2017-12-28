@@ -29,9 +29,8 @@ func NewNsGauge(
 ) NsGauge {
 	vec := prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Namespace: Namespace,
-			Name:      name,
-			Help:      help,
+			Name: name,
+			Help: help,
 		},
 		labels,
 	)
@@ -42,17 +41,21 @@ func NewNsGauge(
 	}
 }
 
-func (metric *nsGauge) GetCollector() prometheus.Collector {
-	return metric.metric
+func (nsg *nsGauge) GetCollector() prometheus.Collector {
+	return nsg.metric
 }
 
 func (nsg *nsGauge) Update(stats *netscaler.NetscalerStats, labels prometheus.Labels) bool {
 	collected := false
-	nsg.metric.Reset()
 	if stats != nil && nsg.exists(stats, labels) {
 		gauge := nsg.metric.With(labels)
 		v := nsg.get(GetGaugeArg{&CollectArg{stats, labels}, gauge})
 		gauge.Set(v)
+		collected = true
 	}
 	return collected
+}
+
+func (nsg *nsGauge) Reset() {
+	nsg.metric.Reset()
 }

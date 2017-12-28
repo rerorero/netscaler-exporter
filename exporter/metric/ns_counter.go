@@ -29,9 +29,8 @@ func NewNsCounter(
 ) NsCounter {
 	vec := prometheus.NewCounterVec(
 		prometheus.CounterOpts{
-			Namespace: Namespace,
-			Name:      name,
-			Help:      help,
+			Name: name,
+			Help: help,
 		},
 		labels,
 	)
@@ -42,13 +41,12 @@ func NewNsCounter(
 	}
 }
 
-func (metric *nsCounter) GetCollector() prometheus.Collector {
-	return metric.metric
+func (nsc *nsCounter) GetCollector() prometheus.Collector {
+	return nsc.metric
 }
 
 func (nsc *nsCounter) Update(stats *netscaler.NetscalerStats, labels prometheus.Labels) bool {
 	collected := false
-	nsc.metric.Reset()
 	if stats != nil && nsc.exists(stats, labels) {
 		counter := nsc.metric.With(labels)
 		v := nsc.get(GetCounterArg{&CollectArg{stats, labels}, counter})
@@ -59,4 +57,8 @@ func (nsc *nsCounter) Update(stats *netscaler.NetscalerStats, labels prometheus.
 		}
 	}
 	return collected
+}
+
+func (nsc *nsCounter) Reset() {
+	nsc.metric.Reset()
 }
