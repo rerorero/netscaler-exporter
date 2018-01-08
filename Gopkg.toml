@@ -35,7 +35,7 @@
 
 [[constraint]]
   name = "github.com/soniah/gosnmp"
-  version = "1.0.0"
+  revision = "84a3f095f9bfb2ca59aa659e55103cfe89684d4a"
 
 [[constraint]]
   branch = "v2"
