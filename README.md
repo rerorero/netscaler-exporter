@@ -6,9 +6,13 @@ Simple Prometheus exoprter server that collects Citrix Netscaler stats.
 
 # To run it
 ```
-TODO
+go get github.com/rerorero/netscaler-exporter
+echo 'bind_port: 8080' > ./config.yml
+netscaler-exporter --conf.file=./config.yml
 
+curl localhost:8080/metrics
 ```
+
 Testing on localhost.
 ```
 # Run mocked SNMP server on localhost
@@ -50,4 +54,8 @@ netscaler:
 See [metrics.go](exporter/metrics.go)
 
 # Using Docker
-TODO
+```
+echo 'bind_port: 8080' > /var/nsx/config.yml
+docker run -p 8080:8080 -v /var/nsx/config.yml:/etc/nsx/nsxconf.yml rerorero/netscaler-exporter:latest
+
+```
