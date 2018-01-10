@@ -11,5 +11,5 @@ script:
 after_success:
   - if [ ! -z "$TRAVIS_TAG" ]; then
     docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD";
-    script/docker-build.sh "rerorero/netscaler-exporter:$TRAVIS_TAG";
+    script/docker-build.sh "rerorero/netscaler-exporter" "$TRAVIS_TAG";
     fi
