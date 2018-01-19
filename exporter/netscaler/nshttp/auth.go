@@ -21,7 +21,7 @@ func (ns *netscalerHttpImpl) authorize() error {
 	data := fmt.Sprintf(`{ 
 		"login": { 
 			"username":"%s", 
-			"password\":"%s" 
+			"password":"%s" 
 		}
 	}`, ns.username, ns.password)
 

@@ -66,7 +66,7 @@ func (ns *netscalerImpl) GetStats() (*NetscalerStats, []error) {
 		}
 	}
 
-	return stats, nil
+	return stats, errors
 }
 
 func (ns *netscalerImpl) GetHost() string {
